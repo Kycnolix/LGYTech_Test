@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Web.Http.Results;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Web.Http.Results;
 
 namespace LGYTech_demo.Models
 {
@@ -10,6 +11,8 @@ namespace LGYTech_demo.Models
 
         //Id, CustomerName, CreatedAt,Total
 
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         [Required, MaxLength(50)]
@@ -19,7 +22,8 @@ namespace LGYTech_demo.Models
         public DateTime CreatedAt { get; set; }
         public decimal Total { get; set; }
 
+        public virtual ICollection<OrderLines> OrderLines
+        { get; set; } = new HashSet<OrderLines>();
 
-    
     }
 }

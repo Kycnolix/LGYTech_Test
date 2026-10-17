@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
@@ -15,8 +16,12 @@ namespace LGYTech_demo.Models
 
         public int ProductId { get; set; }
 
+        [Range(1, int.MaxValue)]
         public int Quantity { get; set; }
 
         public decimal UnitPrice { get; set; }
+
+        public virtual Order Order { get; set; }
+        public virtual Products Product { get; set; }
     }
 }

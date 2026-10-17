@@ -11,6 +11,8 @@ namespace LGYTech_demo.Models
     {
 
         //Id, ProductId, Change, Reason, CreatedAt -- Change örneği: -2; Reason örneği: “Sipariş #12” 
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         public int ProductId { get; set; }
@@ -22,5 +24,7 @@ namespace LGYTech_demo.Models
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public DateTime CreatedAt { get; set; }
+
+        public virtual Products Product { get; set; }
     }
 }
