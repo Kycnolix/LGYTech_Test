@@ -152,6 +152,10 @@
     <Compile Include="Migrations\202610171535002_InitialCreate.Designer.cs">
       <DependentUpon>202610171535002_InitialCreate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202610171800527_AddOrderStoredProcedure.cs" />
+    <Compile Include="Migrations\202610171800527_AddOrderStoredProcedure.Designer.cs">
+      <DependentUpon>202610171800527_AddOrderStoredProcedure.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Order.cs" />
     <Compile Include="Models\OrderLines.cs" />
@@ -159,6 +163,8 @@
     <Compile Include="Models\StockMovements.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\OrderService.cs" />
+    <EmbeddedResource Include="Sql\CreateOrder.sql" />
+    <EmbeddedResource Include="Sql\OrderItemType.sql" />
     <Compile Include="ViewModels\OrderCreateViewModel.cs" />
     <Compile Include="ViewModels\OrderItemViewModel.cs" />
     <Compile Include="ViewModels\ProductFormViewModel.cs" />
@@ -255,6 +261,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202610171535002_InitialCreate.resx">
       <DependentUpon>202610171535002_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202610171800527_AddOrderStoredProcedure.resx">
+      <DependentUpon>202610171800527_AddOrderStoredProcedure.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
