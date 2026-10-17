@@ -16,7 +16,7 @@ namespace LGYTech_demo.Models
         [Required, MaxLength(50), Index("IX_UniqueSKU", IsUnique = true)]
         public string Sku { get; set; }
 
-        [Range(typeof(decimal),"0.01", "9999")]
+        [Range(typeof(decimal),"0,01", "9999,00")]
         public decimal Price { get; set; }
 
         [Range(0,int.MaxValue)]

@@ -1,0 +1,31 @@
+@model IEnumerable<LGYTech_demo.Models.Products>
+
+@{
+    ViewBag.Title = "Item List";
+}
+
+<h2>Item List</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Item Name</th>
+            <th>SKU</th>
+            <th>Price</th>
+            <th>Stock</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var product in Model)
+        {
+            <tr>
+                <td>@product.Id</td>
+                <td>@product.Name</td>
+                <td>@product.Sku</td>
+                <td>@product.Price.ToString("N2") TL</td>
+                <td>@product.Stock</td>
+            </tr>
+        }
+    </tbody>
+</table>
