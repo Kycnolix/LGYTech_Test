@@ -1,0 +1,57 @@
+﻿@model IEnumerable<LGYTech_demo.Models.StockMovements>
+@using System.Linq
+
+@{
+    ViewBag.Title = "Stock Movement History";
+}
+
+<h2>Stock Movement History</h2>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        No stock movements found.
+    </div>
+}
+else
+{
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Product</th>
+                <th>Change</th>
+                <th>Reason</th>
+                <th>Created At</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var movement in Model)
+            {
+                <tr>
+                    <td>@movement.Id</td>
+                    <td>@movement.Product.Name</td>
+                    <td>
+                        @if (movement.Change > 0)
+                        {
+                            <span class="text-success">
+                                +@movement.Change
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="text-danger">
+                                @movement.Change
+                            </span>
+                        }
+                    </td>
+                    <td>@movement.Reason</td>
+                    <td>
+                        @movement.CreatedAt.ToString("dd.MM.yyyy HH:mm")
+                        <small>(UTC)</small>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

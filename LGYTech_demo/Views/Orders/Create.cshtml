@@ -1,0 +1,217 @@
+﻿@model LGYTech_demo.ViewModels.OrderCreateViewModel
+@using LGYTech_demo.ViewModels
+@using System.Web.Helpers
+
+@{
+    ViewBag.Title = "Create Order";
+
+    var products = ViewBag.Products
+        as List<ProductOptionViewModel>
+        ?? new List<ProductOptionViewModel>();
+}
+
+<h2>Create Order</h2>
+
+<form id="orderForm">
+    @Html.AntiForgeryToken()
+
+    <div class="form-group">
+        <label for="customerName">Customer Name</label>
+
+        <input type="text"
+               id="customerName"
+               class="form-control"
+               maxlength="100"
+               required />
+    </div>
+
+    <h4>Order Items</h4>
+
+    <div id="orderItems"></div>
+
+    <button type="button"
+            id="addProduct"
+            class="btn btn-default">
+        Add Product
+    </button>
+
+    <hr />
+
+    <h4>
+        Estimated Total:
+        <span id="totalAmount">0.00</span> TL
+    </h4>
+
+    <div id="orderMessage"
+         class="alert"
+         role="alert"
+         style="display:none;">
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+        Create Order
+    </button>
+</form>
+
+@section scripts {
+    <script>
+    $(function () {
+
+        // Load product information rendered by Razor
+        var products = @Html.Raw(Json.Encode(products));
+
+        function addProductRow() {
+            var options = '<option value="">Select product</option>';
+
+            products.forEach(function (product) {
+                options += '<option value="' + product.Id + '">' +
+                    $('<div>').text(product.Name).html() +
+                    '</option>';
+            });
+
+            var row = `
+                <div class="order-item row" style="margin-bottom:10px;">
+                    <div class="col-sm-6">
+                        <select class="form-control product-select">
+                            ${options}
+                        </select>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <input type="number"
+                               class="form-control quantity-input"
+                               min="1"
+                               value="1" />
+                    </div>
+
+                    <div class="col-sm-3">
+                        <button type="button"
+                                class="btn btn-danger remove-item">
+                            Remove
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            $('#orderItems').append(row);
+        }
+
+        function calculateTotal() {
+            var total = 0;
+
+            $('.order-item').each(function () {
+                var productId = Number(
+                    $(this).find('.product-select').val()
+                );
+
+                var quantity = Number(
+                    $(this).find('.quantity-input').val()
+                );
+
+                var product = products.find(function (p) {
+                    return p.Id === productId;
+                });
+
+                if (product && quantity > 0) {
+                    total += product.Price * quantity;
+                }
+            });
+
+            $('#totalAmount').text(total.toFixed(2));
+        }
+
+        function showMessage(message, isSuccess) {
+            $('#orderMessage')
+                .removeClass('alert-success alert-danger')
+                .addClass(isSuccess
+                    ? 'alert-success'
+                    : 'alert-danger')
+                .text(message)
+                .show();
+        }
+
+        // Add new product row
+        $('#addProduct').on('click', function () {
+            addProductRow();
+        });
+
+        // Remove selected product row
+        $('#orderItems').on('click', '.remove-item', function () {
+            $(this).closest('.order-item').remove();
+            calculateTotal();
+        });
+
+        // Recalculate total when inputs change
+        $('#orderItems').on(
+            'change input',
+            '.product-select, .quantity-input',
+            calculateTotal
+        );
+
+        $('#orderForm').on('submit', function (event) {
+            event.preventDefault();
+
+            var items = [];
+
+            $('.order-item').each(function () {
+                items.push({
+                    ProductId: Number(
+                        $(this).find('.product-select').val()
+                    ),
+                    Quantity: Number(
+                        $(this).find('.quantity-input').val()
+                    )
+                });
+            });
+
+            var order = {
+                CustomerName: $('#customerName').val(),
+                Items: items
+            };
+
+            var token = $('#orderForm input[name="__RequestVerificationToken"]').val();
+
+            $.ajax({
+                url: '@Url.Action("Create", "Orders")',
+                type: 'POST',
+                contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                data: $.param({
+                    __RequestVerificationToken: token,
+                    CustomerName: order.CustomerName
+                }) + '&' + $.param({
+                    Items: order.Items
+                }),
+                success: function (response) {
+                    if (response.success) {
+                        showMessage(response.message, true);
+
+                        $('#orderItems').empty();
+                        $('#customerName').val('');
+                        $('#totalAmount').text('0.00');
+
+                        addProductRow();
+                    } else {
+                        showMessage(response.message, false);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Order request failed:", {
+                        statusCode: xhr.status,
+                        status: status,
+                        error: error,
+                        response: xhr.responseText
+                    });
+
+                    showMessage(
+                        "An unexpected error occurred. Please try again.",
+                        false
+                    );
+                }
+            });
+        });
+
+        // Initialize the first row
+        addProductRow();
+    });
+    </script>
+}
