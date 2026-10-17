@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using LGYTech_demo.Data;
 using LGYTech_demo.Models;
@@ -36,15 +37,20 @@ namespace LGYTech_demo.Services
 
             using (var db = new AppDbContext())
             using (var transaction =
-                db.Database.BeginTransaction(IsolationLevel.Serializable))
+                db.Database.BeginTransaction(IsolationLevel.ReadCommitted))
             {
                 try
                 {
-                    var productIds = model.Items
+                    var items = model.Items
+                        .OrderBy(item => item.ProductId)
+                        .ToList();
+
+                    var productIds = items
                         .Select(item => item.ProductId)
                         .ToList();
 
                     var products = db.Products
+                        .AsNoTracking()
                         .Where(product => productIds.Contains(product.Id))
                         .ToDictionary(product => product.Id);
 
@@ -55,15 +61,24 @@ namespace LGYTech_demo.Services
                     }
 
                     decimal totalAmount = 0;
-
                     var orderLines = new List<OrderLines>();
                     var stockMovements = new List<StockMovements>();
 
-                    foreach (var item in model.Items)
+                    foreach (var item in items)
                     {
                         var product = products[item.ProductId];
 
-                        if (product.Stock < item.Quantity)
+                        // Atomically check and deduct available stock
+                        int affectedRows = db.Database.ExecuteSqlCommand(
+                            @"UPDATE dbo.Products
+                              SET Stock = Stock - @Quantity
+                              WHERE Id = @ProductId
+                                AND Stock >= @Quantity",
+                            new SqlParameter("@Quantity", item.Quantity),
+                            new SqlParameter("@ProductId", item.ProductId)
+                        );
+
+                        if (affectedRows != 1)
                         {
                             throw new InvalidOperationException(
                                 "Insufficient stock for product: " +
@@ -73,8 +88,6 @@ namespace LGYTech_demo.Services
                         decimal unitPrice = product.Price;
 
                         totalAmount += unitPrice * item.Quantity;
-
-                        product.Stock -= item.Quantity;
 
                         orderLines.Add(new OrderLines
                         {
@@ -108,7 +121,6 @@ namespace LGYTech_demo.Services
                     }
 
                     db.SaveChanges();
-
                     transaction.Commit();
 
                     return order.Id;
