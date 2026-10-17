@@ -2,9 +2,35 @@
 
 @{
     ViewBag.Title = "Item List";
+
+    int currentPage = ViewBag.CurrentPage;
+    int totalPages = ViewBag.TotalPages;
+    string search = ViewBag.Search as string;
 }
 
 <h2>Item List</h2>
+<form method="get" action="@Url.Action("Index", "Products")">
+    <div class="form-group">
+        <label for="search">Search Item</label>
+
+        <input type="text"
+               id="search"
+               name="search"
+               value="@search"
+               class="form-control"
+               placeholder="Search Item Name..." />
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+        Ara
+    </button>
+
+    <a href="@Url.Action("Index", "Products")"
+       class="btn btn-default">
+        Clear
+    </a>
+</form>
+<hr />
 
 <table class="table table-striped">
     <thead>
@@ -29,3 +55,25 @@
         }
     </tbody>
 </table>
+
+@if (!Model.Any())
+{
+    <p>We dont have you Item looking for.</p>
+}
+
+@if (totalPages > 1)
+{
+    <nav aria-label="Item pages">
+        <ul class="pagination">
+            @for (int i = 1; i <= totalPages; i++)
+            {
+                <li class="@(i == currentPage ? "active" : "")">
+                    <a href="@Url.Action("Index", "Products",
+                        new { search = search, page = i })">
+                        @i
+                    </a>
+                </li>
+            }
+        </ul>
+    </nav>
+}

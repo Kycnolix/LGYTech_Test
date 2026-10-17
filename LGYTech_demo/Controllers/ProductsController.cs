@@ -1,9 +1,10 @@
-﻿using System;
+﻿using LGYTech_demo.Data;
+using System;
 using System.Collections.Generic;
+using System.Drawing.Printing;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using LGYTech_demo.Data;
 
 namespace LGYTech_demo.Controllers
 {
@@ -11,17 +12,32 @@ namespace LGYTech_demo.Controllers
     {
         // GET: Products
         [HttpGet]
-        public ActionResult Index()
+        public ActionResult Index(string search, int page =1)
         {
+             const int pageSize = 10;
             using (var db = new AppDbContext())
             {
+                var query = db.Products.AsQueryable();
 
-                var products = db.Products
-                .OrderBy(p => p.Id)
-                .ToList();
+                if (!string.IsNullOrWhiteSpace(search))
+                {
+                    query = query.Where(p => p.Name.Contains(search));
+                }
+                int totalCount = query.Count();
+
+                page = Math.Max(1, page);
+                var products = query
+                    .OrderBy(p => p.Id)
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToList();
+
+                ViewBag.Search = search;
+                ViewBag.CurrentPage = page;
+                ViewBag.TotalPages =
+                    (int)Math.Ceiling((double)totalCount / pageSize);
 
                 return View(products);
-
             }
         }
     }
