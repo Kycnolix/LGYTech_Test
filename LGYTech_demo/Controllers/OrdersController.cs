@@ -5,6 +5,7 @@ using LGYTech_demo.ViewModels;
 using System.Linq;
 using LGYTech_demo.Data;
 using System.Data.Entity;
+using System.Data.SqlClient;
 
 namespace LGYTech_demo.Controllers
 {
@@ -88,6 +89,20 @@ namespace LGYTech_demo.Controllers
                     success = false,
                     message = ex.Message
                 });
+            }
+            catch (SqlException ex)
+            {
+                if (ex.Number >= 50001 && ex.Number <= 50005)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = ex.Message
+                    });
+                }
+
+                // Unexpected database errors must not be exposed to clients
+                throw;
             }
         }
     }
