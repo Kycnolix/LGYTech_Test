@@ -29,7 +29,7 @@
                     {
                         Id = c.Int(nullable: false, identity: true),
                         CustomerName = c.String(nullable: false, maxLength: 50),
-                        CreatedAt = c.DateTime(nullable: false),
+                        CreatedAt = c.DateTime(nullable: false, defaultValueSql: "GETUTCDATE()"),
                         Total = c.Decimal(nullable: false, precision: 18, scale: 2),
                     })
                 .PrimaryKey(t => t.Id);
@@ -55,7 +55,7 @@
                         ProductId = c.Int(nullable: false),
                         Change = c.Int(nullable: false),
                         Reason = c.String(nullable: false, maxLength: 300),
-                        CreatedAt = c.DateTime(nullable: false),
+                        CreatedAt = c.DateTime(nullable: false, defaultValueSql: "GETUTCDATE()"),
                     })
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.Products", t => t.ProductId)
