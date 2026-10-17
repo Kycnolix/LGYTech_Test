@@ -8,6 +8,15 @@
     string search = ViewBag.Search as string;
 }
 
+@Html.ActionLink(
+    "New Item",
+    "Create",
+    "Products",
+    null,
+    new { @class = "btn btn-primary" }
+)
+
+
 <h2>Item List</h2>
 <form method="get" action="@Url.Action("Index", "Products")">
     <div class="form-group">
@@ -22,7 +31,7 @@
     </div>
 
     <button type="submit" class="btn btn-primary">
-        Ara
+        Search
     </button>
 
     <a href="@Url.Action("Index", "Products")"
@@ -40,9 +49,11 @@
             <th>SKU</th>
             <th>Price</th>
             <th>Stock</th>
+            <th>Edit</th>
         </tr>
     </thead>
     <tbody>
+
         @foreach (var product in Model)
         {
             <tr>
@@ -51,6 +62,15 @@
                 <td>@product.Sku</td>
                 <td>@product.Price.ToString("N2") TL</td>
                 <td>@product.Stock</td>
+                <td>
+                    @Html.ActionLink(
+                        "Edit",
+                        "Edit",
+                        "Products",
+                        new { id = product.Id },
+                        new { @class = "btn btn-default btn-sm" }
+                    )
+                </td>
             </tr>
         }
     </tbody>

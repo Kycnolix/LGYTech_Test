@@ -18,3 +18,33 @@ select,
 textarea {
     max-width: 280px;
 }
+
+.product-field {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+    .product-field .form-control {
+        width: 260px;
+        flex: 0 0 260px;
+    }
+
+    .product-field .field-validation-error {
+        display: inline-block;
+        margin: 0;
+        padding: 0;
+        color: #dc3545;
+    }
+
+@media (max-width: 576px) {
+    .product-field {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+        .product-field .form-control {
+            width: 100%;
+            flex: 0 0 auto;
+        }
+}

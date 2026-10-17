@@ -1,0 +1,63 @@
+﻿@model LGYTech_demo.ViewModels.ProductFormViewModel
+
+@{
+    ViewBag.Title = "Add Item";
+}
+
+<h2>Yeni Ürün Ekle</h2>
+
+@using (Html.BeginForm("Edit", "Products", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Name, "Product Name")
+
+        <div class="product-field">
+            @Html.TextBoxFor(m => m.Name,
+                new { @class = "form-control" })
+
+            @Html.ValidationMessageFor(m => m.Name,
+                "",
+                new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Price, "Price")
+
+        <div class="product-field">
+            @Html.TextBoxFor(m => m.Price,
+                new { @class = "form-control" })
+
+            @Html.ValidationMessageFor(m => m.Price,
+                "",
+                new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Stock, "Stock")
+
+        <div class="product-field">
+            @Html.TextBoxFor(m => m.Stock,
+                new { @class = "form-control" })
+
+            @Html.ValidationMessageFor(m => m.Stock,
+                "",
+                new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+        Kaydet
+    </button>
+
+    @Html.ActionLink(
+        "Cancel",
+        "Index",
+        "Products",
+        null,
+        new { @class = "btn btn-default" }
+    )
+}
