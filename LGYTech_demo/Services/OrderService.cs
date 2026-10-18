@@ -31,6 +31,8 @@ namespace LGYTech_demo.Services
                 throw new ArgumentException(
                     "Invalid product or quantity.");
             }
+            
+
 
             if (model.Items.GroupBy(item => item.ProductId)
                            .Any(group => group.Count() > 1))
@@ -68,9 +70,36 @@ namespace LGYTech_demo.Services
                 Direction = ParameterDirection.Output
             };
 
+
+
+
             using (var db = new AppDbContext())
             {
-                // The stored procedure manages its own transaction
+                foreach (var item in model.Items)
+                {
+                    var product = db.Products
+                        .FirstOrDefault(p => p.Id == item.ProductId);
+
+                    if (product == null)
+                    {
+                        throw new ArgumentException("Product not found.");
+                    }
+
+                    
+                    item.ProductName = product.Name;
+                    item.Stock = product.Stock;
+
+                   
+                    if (item.Stock < item.Quantity)
+                    {
+                        throw new ArgumentException(
+                            $"Insufficient stock for '{item.ProductName}'. " +
+                            $"Available: {item.Stock}, " +
+                            $"Requested: {item.Quantity}."
+                        );
+                    }
+                }
+
                 db.Database.ExecuteSqlCommand(
                     "EXEC dbo.CreateOrder @CustomerName, @Items, @OrderId OUTPUT",
                     customerParameter,

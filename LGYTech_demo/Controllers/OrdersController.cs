@@ -66,7 +66,7 @@ namespace LGYTech_demo.Controllers
             try
             {
                 int orderId = _orderService.CreateOrder(model);
-
+               
                 return Json(new
                 {
                     success = true,
