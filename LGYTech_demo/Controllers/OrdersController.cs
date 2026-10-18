@@ -70,7 +70,7 @@ namespace LGYTech_demo.Controllers
                 return Json(new
                 {
                     success = true,
-                    message = "Order created successfully.",
+                    message = $"Order #{orderId} created successfully.",
                     orderId = orderId
                 });
             }

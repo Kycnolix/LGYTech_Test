@@ -58,7 +58,7 @@
     $(function () {
 
         // Load product information rendered by Razor
-        var products = @Html.Raw(Json.Encode(products));
+        var products = @Html.Raw(Json.Encode(products))
 
         function addProductRow() {
             var options = '<option value="">Select product</option>';
